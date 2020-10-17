@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tasks/models/task.dart';
 import 'package:tasks/screens/task_form.dart';
+import 'package:tasks/services/task_service.dart';
+import 'package:tasks/widgets/task_item.dart';
 
 class TasksScreen extends StatefulWidget {
   @override
@@ -8,14 +10,14 @@ class TasksScreen extends StatefulWidget {
 }
 
 class _TasksScreenState extends State<TasksScreen> {
-  List<Task> tasks = [
-    Task(title: "Titulo", description: "Descrição"),
-    Task(title: "Titulo 2", description: "Descrição 2"),
-    Task(title: "Titulo 3", description: "Descrição 3"),
-  ];
+  TaskService _taskService = new TaskService();
+
+  List<Task> tasks = [];
 
   @override
   Widget build(BuildContext context) {
+    _listTasks();
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Tasks"),
@@ -23,16 +25,7 @@ class _TasksScreenState extends State<TasksScreen> {
       body: ListView.builder(
         itemCount: tasks.length,
         itemBuilder: (_, index) {
-          Task currentTask = tasks[index];
-
-          return Card(
-            elevation: 20,
-            child: ListTile(
-              title: Text(currentTask.title),
-              subtitle: Text(currentTask.description),
-              trailing: Text(currentTask.description),
-            ),
-          );
+          return TaskItem(tasks[index]);
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -40,7 +33,7 @@ class _TasksScreenState extends State<TasksScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => TaskForm(_adicionarNovaTaskaLIsta),
+              builder: (context) => TaskForm(_saveTask),
             ),
           );
         },
@@ -49,9 +42,15 @@ class _TasksScreenState extends State<TasksScreen> {
     );
   }
 
-  _adicionarNovaTaskaLIsta(valor) {
+  _saveTask(valor) async {
+    await _taskService.insert(valor);
+    _listTasks();
+  }
+
+  _listTasks() async {
+    List<Task> localTasks = await _taskService.listAll();
     setState(() {
-      tasks.add(valor);
+      tasks = localTasks ?? [];
     });
   }
 }
