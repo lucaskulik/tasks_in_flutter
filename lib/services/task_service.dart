@@ -45,4 +45,10 @@ class TaskService {
         "DELETE FROM ${DBService.TABLE_TASK} WHERE ${DBService.TASK_ID} = ? ",
         [id]);
   }
+
+  Future<void> update(Task task) async {
+    Database db = await DBService.instance.database;
+    await db.update(DBService.TABLE_TASK, task.toMap(),
+        where: "${DBService.TASK_ID} = ?", whereArgs: [task.id]);
+  }
 }

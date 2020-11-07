@@ -62,7 +62,7 @@ class _TasksScreenState extends State<TasksScreen> {
                           _onRemove(tasks[index]);
                       },
                       direction: DismissDirection.endToStart,
-                      child: TaskItem(tasks[index], _onRemove),
+                      child: TaskItem(tasks[index], _onCheck),
                     ),
                   );
                 },
@@ -107,6 +107,14 @@ class _TasksScreenState extends State<TasksScreen> {
   _onRemove(Task task) {
     print("Remover");
     _taskService.remove(task.id);
+    listTasks();
+  }
+
+  _onCheck(Task task, bool value) {
+    setState(() {
+      task.done = value;
+    });
+    this._taskService.update(task);
     listTasks();
   }
 }
