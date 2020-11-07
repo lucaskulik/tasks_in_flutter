@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tasks/models/image.dart';
 import 'package:tasks/models/task.dart';
+import 'package:tasks/screens/camera_screen.dart';
+import 'package:tasks/widgets/task_image_form_item.dart';
 
 class TaskForm extends StatefulWidget {
   Function saveMethod;
@@ -83,6 +86,26 @@ class _TaskFormState extends State<TaskForm> {
                 const SizedBox(
                   height: 30,
                 ),
+                SizedBox(
+                  height: 200,
+                  width: 200,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _task.images.length + 1,
+                    itemBuilder: (_, index) {
+                      if (index > _task.images.length - 1) {
+                        return _takePicture(context);
+                      } else {
+                        ImageModel image = _task.images[index];
+                        if (image != null)
+                          return TaskImageFormItem(index, image.base64);
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
                 RaisedButton(
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
@@ -106,5 +129,31 @@ class _TaskFormState extends State<TaskForm> {
         ),
       ),
     );
+  }
+
+  _addImage(String image) {
+    setState(() {
+      _task.images.add(ImageModel(base64: image));
+    });
+  }
+
+  _takePicture(BuildContext context) {
+    return Card(
+        child: AspectRatio(
+      aspectRatio: 0.5,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => CameraScreen(_addImage),
+            ),
+          );
+        },
+        child: Container(
+          color: Colors.black.withAlpha(100),
+          child: Icon(Icons.camera_alt, color: Colors.white),
+        ),
+      ),
+    ));
   }
 }

@@ -8,13 +8,21 @@ class DBService {
   Database _database;
 
   static final String DB_NAME = "db_tasks.db";
-  static final int DB_VERSION = 2;
+  static final int DB_VERSION = 3;
 
   static final String TABLE_TASK = "tasks";
   static final String TASK_ID = "id";
   static final String TASK_TITLE = "title";
   static final String TASK_DESCRIPTION = "description";
   static final String TASK_DONE = "done";
+
+  static final String TABLE_IMAGE = "image";
+  static final String IMAGE_ID = "id";
+  static final String IMAGE_TASK_ID = "task_id";
+  static final String IMAGE_BASE64 = "image_base64";
+
+  static final String CREATE_TABLE_IMAGE =
+      "CREATE TABLE $TABLE_IMAGE ($IMAGE_ID INTEGER PRIMARY KEY, $IMAGE_TASK_ID INTEGER, $IMAGE_BASE64 TEXT);";
 
   Future<Database> get database async {
     if (_database != null) return _database;
@@ -37,6 +45,7 @@ class DBService {
   Future<void> _createDatabase(Database db, int newVersion) async {
     List<String> query = [
       "CREATE TABLE $TABLE_TASK ($TASK_ID INTEGER PRIMARY KEY, $TASK_TITLE TEXT, $TASK_DESCRIPTION TEXT, $TASK_DONE INTEGER DEFAULT 0);",
+      "CREATE TABLE $TABLE_IMAGE ($IMAGE_ID INTEGER PRIMARY KEY, $IMAGE_TASK_ID INTEGER, $IMAGE_BASE64 TEXT);"
     ];
 
     for (String qy in query) {
@@ -51,6 +60,10 @@ class DBService {
     if (oldVersion < 2) {
       query.add(
           "ALTER TABLE $TABLE_TASK ADD COLUMN $TASK_DONE INTEGER DEFAULT 0");
+    }
+
+    if (oldVersion < 3) {
+      query.add(CREATE_TABLE_IMAGE);
     }
 
     for (String qy in query) {

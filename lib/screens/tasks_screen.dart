@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tasks/models/task.dart';
 import 'package:tasks/screens/task_form.dart';
+import 'package:tasks/services/image_service.dart';
 import 'package:tasks/services/task_service.dart';
 import 'package:tasks/widgets/search_widget.dart';
 import 'package:tasks/widgets/task_item.dart';
@@ -12,6 +13,7 @@ class TasksScreen extends StatefulWidget {
 
 class _TasksScreenState extends State<TasksScreen> {
   TaskService _taskService = new TaskService();
+  ImageService _imageService = new ImageService();
   String search;
 
   List<Task> tasks = [];
@@ -62,7 +64,11 @@ class _TasksScreenState extends State<TasksScreen> {
                           _onRemove(tasks[index]);
                       },
                       direction: DismissDirection.endToStart,
-                      child: TaskItem(tasks[index], _onCheck),
+                      child: TaskItem(
+                        tasks[index],
+                        _onCheck,
+                        onRemoveImage: this._onRemoveImage,
+                      ),
                     ),
                   );
                 },
@@ -106,7 +112,12 @@ class _TasksScreenState extends State<TasksScreen> {
 
   _onRemove(Task task) {
     print("Remover");
-    _taskService.remove(task.id);
+    _taskService.remove(task);
+    listTasks();
+  }
+
+  _onRemoveImage(id) {
+    this._imageService.removeById(id);
     listTasks();
   }
 

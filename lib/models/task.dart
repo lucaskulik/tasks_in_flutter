@@ -1,3 +1,4 @@
+import 'package:tasks/models/image.dart';
 import 'package:tasks/services/db_service.dart';
 
 class Task {
@@ -5,6 +6,7 @@ class Task {
   String title;
   String description;
   bool done;
+  List<ImageModel> images = [];
 
   Task({this.title, this.description});
 
